@@ -1,0 +1,26 @@
+[
+  {
+    "topic": "Order Tracking",
+    "content": "Customers can track their order by logging into their NexaConnect account and going to 'My Orders'. A tracking link is also emailed once the order ships."
+  },
+  {
+    "topic": "Delivery Times",
+    "content": "Standard delivery takes 3-5 business days. Express delivery takes 1-2 business days. Delivery times may be longer during peak periods (holidays, sales events)."
+  },
+  {
+    "topic": "Payment Methods",
+    "content": "NexaConnect accepts debit/credit cards, bank transfer, and mobile money. If a payment fails, the customer should confirm their card details or try an alternative payment method."
+  },
+  {
+    "topic": "Returns",
+    "content": "Items can be returned within 7 days of delivery, provided they are unused and in original packaging. Returns are started from 'My Orders' > 'Request Return'."
+  },
+  {
+    "topic": "Refunds",
+    "content": "Refunds are processed within 5-7 business days after the returned item is received and inspected. Customers are notified by email once the refund is issued."
+  },
+  {
+    "topic": "Product Information",
+    "content": "Full product details, including size, material, and stock availability, are listed on each product page under the 'Details' tab."
+  }
+]

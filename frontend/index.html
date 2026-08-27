@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexaConnect Support Assistant</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0b0b1a;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    background: #14142b;
+    padding: 16px;
+    border-bottom: 1px solid #2a2a4a;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 18px;
+    color: #d4ff4a;
+  }
+  header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #999;
+  }
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    line-height: 1.4;
+    font-size: 14px;
+  }
+  .user {
+    align-self: flex-end;
+    background: #4a4aff;
+    color: white;
+    border-bottom-right-radius: 2px;
+  }
+  .bot {
+    align-self: flex-start;
+    background: #1e1e3a;
+    border: 1px solid #2a2a4a;
+    border-bottom-left-radius: 2px;
+  }
+  .meta {
+    font-size: 11px;
+    color: #888;
+    margin-top: 6px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge-delivery { background: #2a4a2a; color: #9f7; }
+  .badge-payment { background: #2a2a4a; color: #9bf; }
+  .badge-refund { background: #4a3a2a; color: #fb7; }
+  .badge-complaint { background: #4a2a2a; color: #f87; }
+  .badge-product { background: #3a2a4a; color: #b8f; }
+  .badge-general { background: #2a2a2a; color: #aaa; }
+  form {
+    display: flex;
+    padding: 12px;
+    background: #14142b;
+    border-top: 1px solid #2a2a4a;
+    gap: 8px;
+  }
+  input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #2a2a4a;
+    background: #0b0b1a;
+    color: #eee;
+    font-size: 14px;
+  }
+  button {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background: #d4ff4a;
+    color: #0b0b1a;
+    font-weight: bold;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>NexaConnect Support Assistant</h1>
+  <p>Ask about orders, delivery, payments, returns or refunds</p>
+</header>
+
+<div id="chat"></div>
+
+<form id="chatForm">
+  <input id="chatInput" type="text" placeholder="Type your message...">
+  <button type="submit">Send</button>
+</form>
+
+<script>
+  const chat = document.getElementById('chat');
+  const form = document.getElementById('chatForm');
+  const input = document.getElementById('chatInput');
+
+  function addMessage(text, sender, meta) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg ' + sender;
+
+    const textDiv = document.createElement('div');
+    textDiv.textContent = text;
+    wrapper.appendChild(textDiv);
+
+    if (meta && meta.length) {
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'meta';
+      meta.forEach(label => {
+        const span = document.createElement('span');
+        span.className = 'badge badge-' + label.toLowerCase();
+        span.textContent = label;
+        metaDiv.appendChild(span);
+      });
+      wrapper.appendChild(metaDiv);
+    }
+
+    chat.appendChild(wrapper);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, 'user');
+    input.value = '';
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const result = await response.json();
+
+      const labels = [result.category];
+      if (result.escalated) labels.push('escalated');
+
+      addMessage(result.answer, 'bot', labels);
+    } catch (err) {
+      addMessage('Sorry, something went wrong reaching support.', 'bot', ['general']);
+    }
+  });
+</script>
+
+</body>
+</html>
